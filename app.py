@@ -21,27 +21,70 @@ except Exception as e:
     print(f"❌ Error loading model: {e}")
     classifier = None
 
+def get_class_info(waste_class: str) -> str:
+    """
+    Get detailed information about each waste class.
+    """
+    class_info = {
+        "Hazardous": {
+            "icon": "⚠️",
+            "description": "Materials that pose risks to health or environment",
+            "examples": "Batteries, chemicals, paint, electronics, fluorescent bulbs, pesticides",
+            "disposal": "Take to designated hazardous waste collection center. Never mix with regular trash.",
+            "tips": "Store in original containers, keep away from children and pets"
+        },
+        "Non-Recyclable": {
+            "icon": "🗑️",
+            "description": "Materials that cannot be recycled through standard programs",
+            "examples": "Styrofoam, plastic bags, chip bags, contaminated materials, ceramics",
+            "disposal": "Dispose in general waste bin. Consider reducing usage of these items.",
+            "tips": "Look for alternative products with recyclable packaging"
+        },
+        "Organic": {
+            "icon": "🌱",
+            "description": "Biodegradable materials from living organisms",
+            "examples": "Food scraps, yard waste, paper towels, coffee grounds, eggshells",
+            "disposal": "Compost at home or use green waste bin. Keep separate from other waste.",
+            "tips": "Composting reduces landfill waste and creates nutrient-rich soil"
+        },
+        "Recyclable": {
+            "icon": "♻️",
+            "description": "Materials that can be processed and reused",
+            "examples": "Paper, cardboard, glass bottles, aluminum cans, plastic bottles (check number)",
+            "disposal": "Place in recycling bin. Clean and dry items before recycling.",
+            "tips": "Check local recycling guidelines for accepted materials"
+        }
+    }
+    
+    info = class_info.get(waste_class, {})
+    if not info:
+        return "No information available."
+    
+    return f"""{info['icon']} {waste_class.upper()} WASTE
+
+Description: {info['description']}
+
+Examples: {info['examples']}
+
+Disposal Instructions:
+{info['disposal']}
+
+Helpful Tips:
+{info['tips']}"""
+
 def create_detailed_report(predicted_class: str, confidence: float, all_predictions: dict) -> str:
     """
     Create a detailed text report of classification results.
-    
-    Args:
-        predicted_class: Name of the predicted class
-        confidence: Confidence score for the predicted class
-        all_predictions: Dictionary of all class probabilities
-        
-    Returns:
-        str: Formatted report text
     """
     report = []
     report.append("=" * 60)
     report.append("WASTE CLASSIFICATION RESULTS")
     report.append("=" * 60)
     report.append("")
-    report.append(f"🎯 PREDICTED CLASS: {predicted_class}")
-    report.append(f"   Confidence: {confidence:.2%}")
+    report.append(f"PREDICTED CLASS: {predicted_class}")
+    report.append(f"Confidence: {confidence:.2%}")
     report.append("")
-    report.append("📊 ALL CLASS PROBABILITIES:")
+    report.append("ALL CLASS PROBABILITIES:")
     report.append("-" * 60)
     
     # Sort by probability (descending)
@@ -54,15 +97,13 @@ def create_detailed_report(predicted_class: str, confidence: float, all_predicti
         
         # Highlight the predicted class
         if class_name == predicted_class:
-            report.append(f"  ➤ {class_name:20s} {bar} {probability:6.2%} ⭐")
+            report.append(f"  > {class_name:20s} {bar} {probability:6.2%} (PREDICTED)")
         else:
             report.append(f"    {class_name:20s} {bar} {probability:6.2%}")
     
     report.append("=" * 60)
     report.append("")
-    report.append("📋 DISPOSAL INFORMATION:")
-    report.append("")
-    report.append(get_waste_disposal_info(predicted_class))
+    report.append(get_class_info(predicted_class))
     
     return "\n".join(report)
 
@@ -118,8 +159,8 @@ iface = gr.Interface(
         gr.Label(num_top_classes=3, label="Classification Result"),
         gr.Textbox(label="Detailed Report", lines=20, max_lines=30)
     ],
-    title="♻️ Waste Classifier AI",
-    description="Upload an image of waste to classify it into categories like Recyclable, Organic, Hazardous, etc.",
+    title="🌍 Smart Waste Classifier",
+    description="Upload an image of waste to classify it into categories: Recyclable, Organic, Hazardous, or Non-Recyclable. Get instant disposal instructions and helpful tips!",
     examples=[]
 )
 

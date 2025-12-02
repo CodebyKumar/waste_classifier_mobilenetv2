@@ -138,18 +138,6 @@ uv run python tests/test_system.py
 
 The model classifies waste into 4 categories with confidence scores. Check the detailed report in the web interface for probability distributions across all classes.
 
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📝 License
-
-[Add your license here]
-
-## 👨‍💻 Author
-
-[Add your name/contact here]
-
 ## 🙏 Acknowledgments
 
 - MobileNetV2 architecture by Google

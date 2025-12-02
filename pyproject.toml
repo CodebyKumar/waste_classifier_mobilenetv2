@@ -1,0 +1,14 @@
+[project]
+name = "waste-classifier-mobilenetv2"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "gradio>=3.0.0",
+    "ipykernel>=7.1.0",
+    "kagglehub>=0.3.13",
+    "numpy>=1.21.0",
+    "opencv-python>=4.5.0",
+    "tensorflow>=2.10.0",
+]

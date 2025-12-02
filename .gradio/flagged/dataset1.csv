@@ -1,0 +1,2 @@
+Upload Waste Image,Classification Result,timestamp
+.gradio/flagged/Upload Waste Image/7ec1f8bc391bcc5f97c4/image.jpeg,"{""label"": ""Recyclable"", ""confidences"": [{""label"": ""Recyclable"", ""confidence"": 0.81491619348526}, {""label"": ""Hazardous"", ""confidence"": 0.10171898454427719}, {""label"": ""Non-Recyclable"", ""confidence"": 0.06280199438333511}]}",2025-12-03 00:30:20.492930

@@ -60,6 +60,16 @@ def test_preprocessing():
         # Test visualization
         visualized = visualize_preprocessed_image(preprocessed)
         assert visualized.shape == (224, 224, 3), f"Expected shape (224, 224, 3), got {visualized.shape}"
+
+        # MobileNetV2 preprocessing is used by newly retrained models.
+        mobilenet_preprocessed = preprocess_image(dummy_image, normalization="mobilenet_v2")
+        assert mobilenet_preprocessed.min() >= -1 and mobilenet_preprocessed.max() <= 1, "Values not normalized to [-1, 1]"
+
+        try:
+            preprocess_image(np.zeros((10, 10), dtype=np.uint8))
+            raise AssertionError("Expected invalid image input to raise ValueError")
+        except ValueError:
+            pass
         
         print("✓ Image preprocessing works correctly")
         print(f"  - Input shape: {dummy_image.shape}")
@@ -102,6 +112,11 @@ def test_model_loading():
         assert 'confidence' in results
         assert 'all_predictions' in results
         assert 'sorted_predictions' in results
+        assert 'is_confident' in results
+        assert 'confidence_threshold' in results
+        assert len(results['all_predictions']) == len(classifier.class_labels)
+        assert abs(sum(results['all_predictions'].values()) - 1.0) < 1e-4
+        assert results['predicted_class'] in classifier.class_labels
         
         print("✓ Model loading and prediction works correctly")
         print(f"  - Model loaded from: {model_path}")

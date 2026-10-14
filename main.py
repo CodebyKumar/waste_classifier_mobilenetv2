@@ -73,13 +73,9 @@ Examples:
     if args.save:
         save_image(image, args.save)
     
-    # Step 2: Preprocess image
-    print("\n[2/4] Preprocessing image...")
-    preprocessed_image = preprocess_image(image)
-    print(f"✓ Image preprocessed. Shape: {preprocessed_image.shape}")
-    
-    # Step 3: Load model and make prediction
-    print("\n[3/4] Loading model and making prediction...")
+    # Step 2: Load the model before preprocessing so its metadata selects the
+    # exact normalization used during training.
+    print("\n[2/4] Loading model...")
     try:
         classifier = WasteClassifier(
             model_path=args.model,
@@ -88,6 +84,11 @@ Examples:
     except FileNotFoundError as e:
         print(f"❌ Error: {e}")
         sys.exit(1)
+
+    # Step 3: Preprocess image
+    print("\n[3/4] Preprocessing image and making prediction...")
+    preprocessed_image = preprocess_image(image, normalization=classifier.preprocessing)
+    print(f"✓ Image preprocessed. Shape: {preprocessed_image.shape}")
     
     # Get prediction with detailed results
     results = classifier.predict_with_confidence(preprocessed_image)
@@ -103,6 +104,13 @@ Examples:
     
     # Print results to console
     print_prediction_results(predicted_class, all_predictions)
+
+    if not results['is_confident']:
+        print(
+            f"\n⚠ Low-confidence prediction ({confidence:.2%} < "
+            f"{results['confidence_threshold']:.0%}). Verify the item manually "
+            "before following disposal guidance."
+        )
     
     # Show disposal information
     print("\n📋 DISPOSAL INFORMATION:")

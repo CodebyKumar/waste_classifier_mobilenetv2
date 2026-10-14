@@ -128,17 +128,34 @@ uv run python tests/test_system.py
 
 ## 🛠️ Technical Details
 
-- **Model**: MobileNetV2 (pre-trained on ImageNet, fine-tuned for waste classification)
+- **Model**: MobileNetV2 pretrained on ImageNet with a four-class transfer-learning head (the checked-in legacy model keeps the backbone frozen)
 - **Input Size**: 224x224x3 RGB images
 - **Framework**: TensorFlow/Keras
 - **Web Framework**: Gradio
 - **Image Processing**: OpenCV
 
-## 📊 Model Performance
+## 📊 Model Performance and Evaluation
 
-The model classifies waste into 4 categories with confidence scores. Check the detailed report in the web interface for probability distributions across all classes.
+The checked-in model returns four class probabilities. Its original notebook
+recorded approximately **53% best validation accuracy**, but it has no held-out
+test evaluation; do not treat that number as production accuracy. See the
+[project report](docs/PROJECT_REPORT.md) for limitations, verified components,
+and the retraining workflow.
+
+## 🔁 Retraining
+
+`train.py` provides a reproducible stratified train/validation/test split,
+training-only augmentation, checkpointing, fine-tuning, and held-out test
+metrics. With a dataset arranged in class folders, run:
+
+```bash
+uv run python train.py --dataset-dir /path/to/waste_dataset
+```
+
+The script writes a new `.keras` model, matching labels file, and JSON
+configuration next to it without overwriting the supplied legacy artifacts.
 
 ## 🙏 Acknowledgments
 
 - MobileNetV2 architecture by Google
-- Dataset: [Add dataset source if applicable]
+- Dataset used in the original notebook: Kaggle `phenomsg/waste-classification`

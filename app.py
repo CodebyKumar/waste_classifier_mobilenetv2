@@ -72,7 +72,13 @@ Disposal Instructions:
 Helpful Tips:
 {info['tips']}"""
 
-def create_detailed_report(predicted_class: str, confidence: float, all_predictions: dict) -> str:
+def create_detailed_report(
+    predicted_class: str,
+    confidence: float,
+    all_predictions: dict,
+    is_confident: bool,
+    confidence_threshold: float,
+) -> str:
     """
     Create a detailed text report of classification results.
     """
@@ -83,6 +89,11 @@ def create_detailed_report(predicted_class: str, confidence: float, all_predicti
     report.append("")
     report.append(f"PREDICTED CLASS: {predicted_class}")
     report.append(f"Confidence: {confidence:.2%}")
+    if not is_confident:
+        report.append(
+            f"\n⚠ REVIEW REQUIRED: confidence is below the {confidence_threshold:.0%} "
+            "threshold. Do not rely on this prediction alone for disposal."
+        )
     report.append("")
     report.append("ALL CLASS PROBABILITIES:")
     report.append("-" * 60)
@@ -129,7 +140,7 @@ def predict_waste(image):
         image_bgr = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
         
         # Preprocess
-        preprocessed = preprocess_image(image_bgr)
+        preprocessed = preprocess_image(image_bgr, normalization=classifier.preprocessing)
         
         # Predict
         results = classifier.predict_with_confidence(preprocessed)
@@ -143,7 +154,13 @@ def predict_waste(image):
         print(f"All probs: {all_predictions}")
         
         # Create detailed report
-        report = create_detailed_report(predicted_class, confidence, all_predictions)
+        report = create_detailed_report(
+            predicted_class,
+            confidence,
+            all_predictions,
+            results['is_confident'],
+            results['confidence_threshold'],
+        )
         
         return all_predictions, report
         
